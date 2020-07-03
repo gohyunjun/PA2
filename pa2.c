@@ -95,7 +95,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
  */
 void free_page(unsigned int vpn)
 {
-    (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = ;
+    (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = -1;
     
 
 }
