@@ -62,6 +62,26 @@ extern unsigned int mapcounts[];
  */
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 {
+    if (rw == true) {
+        (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->writable = true;
+    }
+    else {
+        (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->writable = false;
+
+    }
+
+    for (int i = 0;; i++) {
+        if (mapcounts[i] == NULL) {
+
+            (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = i;
+
+            mapcounts[i]++;
+            break;
+        }
+    }
+    
+   
+
 	return -1;
 }
 
