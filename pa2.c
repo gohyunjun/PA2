@@ -76,6 +76,8 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
             (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = i;
 
             mapcounts[i]++;
+
+            return i;
             break;
         }
     }
