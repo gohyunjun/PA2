@@ -71,7 +71,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
 
     for (int i = 0;; i++) {
-        if (mapcounts[i] == NULL) {
+        if (mapcounts[i] == 0) {
 
             (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = i;
 
@@ -79,8 +79,6 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
             break;
         }
     }
-    
-   
 
 	return -1;
 }
@@ -97,6 +95,9 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
  */
 void free_page(unsigned int vpn)
 {
+    (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->pfn = ;
+    
+
 }
 
 
