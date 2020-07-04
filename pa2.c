@@ -70,16 +70,27 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pd_index--;
     }
 
-    (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->valid = true;
+
+    current->pagetable.outer_ptes[pd_index][pte_index].ptes->valid = true;
 
     if (rw == 2 || rw == 3) {
-        (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
+        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
     }
     else {
-        (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->writable = false;
+        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = false;
     }
 
-    
+    for (int i = 0;; i++) {
+        if (mapcounts[i] == 0) {
+
+            current->pagetable.outer_ptes[pd_index][pte_index].ptes->pfn = i;
+
+            mapcounts[i]++;
+
+            return i;
+            break;
+        }
+    }
 
 	return -1;
 }
