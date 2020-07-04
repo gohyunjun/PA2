@@ -68,7 +68,10 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
    
 
     for (int i = 0;; i++) {
-        if (mapcounts[i] == 0) {
+        if (mapcounts[i] != 0) {
+            continue;
+        }
+        else {
 
             current->pagetable.outer_ptes[pd_index][pte_index].ptes->pfn = i;
 
@@ -77,6 +80,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
             return i;
             break;
         }
+
     }
 
 	return -1;
