@@ -71,8 +71,15 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
 
     printf("mid\n");
+    ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
 
-            ptbr->outer_ptes[pd_index][pte_index].ptes[pte_index].pfn = 1;
+    if (rw == 2 || rw == 3) {
+        ptbr->outer_ptes[pd_index]->ptes->writable = true;
+    }
+    else {
+        ptbr->outer_ptes[pd_index]->ptes->writable = false;
+    }
+
     printf("mid\n");
     
 
@@ -80,7 +87,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         if (mapcounts[i] == 0) {
 
 
-            current->pagetable.outer_ptes[pd_index][pte_index].ptes[pte_index].pfn = i;
+            ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
 
 
             mapcounts[i]++;
