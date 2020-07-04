@@ -61,13 +61,20 @@ extern unsigned int mapcounts[];
  *   Return -1 if all page frames are allocated.
  */
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
-{
+{   
+    int pd_index = vpn / NR_PTES_PER_PAGE;
+    int pte_index = vpn % NR_PTES_PER_PAGE - 1;
+
+    if (pte_index == -1) {
+        pte_index = NR_PTES_PER_PAGE - 1;
+        pd_index--;
+    }
+
     if (rw == true) {
-        (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->writable = true;
+        (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
     }
     else {
-        (*current).pagetable.outer_ptes[vpn / 16][vpn % 16].ptes->writable = false;
-
+        (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->writable = false;
     }
 
     for (int i = 0;; i++) {
