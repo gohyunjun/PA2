@@ -69,7 +69,10 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pte_index = NR_PTES_PER_PAGE - 1;
         pd_index--;
     }
-    printf("%d", ptbr);
+    printf("%d", pd_index);
+    printf("%d", pte_index);
+    printf("%d", ptbr->outer_ptes[pd_index][pte_index]);
+
     printf("mid\n");
 
     ptbr->outer_ptes[pd_index][pte_index].ptes->valid = true;
