@@ -165,11 +165,25 @@ void switch_process(unsigned int pid)
 			/* FOUND */
 			break;
 		}
+        else {
+	        p = malloc(sizeof(*p));		/* This example shows to create a process, */
+	        INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
+	        list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
+            
+            p->pid = pid;
+
+            current = p;
+            ptbr = &(current->pagetable);
+
+            for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr ÃÊ±âÈ­
+                for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
+                    ptbr->outer_ptes[i]->ptes[j].writable = false;
+
+                }
+            }
+
+        }
 	}
 
-	p = malloc(sizeof(*p));		/* This example shows to create a process, */
-	INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
-	list_add_tail(&p->list, &processes);
-								/* and add it to the @processes list */
 }
 
