@@ -70,21 +70,21 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pd_index--;
     }
     printf("mid\n");
+    printf("%d", ptbr->outer_ptes[pd_index][pte_index].ptes->valid);
 
-
-    ptbr->outer_ptes[pd_index]->ptes->valid = true;
+    ptbr->outer_ptes[pd_index][pte_index].ptes->valid = true;
 
     if (rw == 2 || rw == 3) {
-        ptbr->outer_ptes[pd_index]->ptes->writable = true;
+        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = true;
     }
     else {
-        ptbr->outer_ptes[pd_index]->ptes->writable = false;
+        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = false;
     }
 
     for (int i = 0;; i++) {
         if (mapcounts[i] == 0) {
 
-            ptbr->outer_ptes[pd_index]->ptes->pfn = i;
+            ptbr->outer_ptes[pd_index][pte_index].ptes->pfn = i;
 
             mapcounts[i]++;
 
