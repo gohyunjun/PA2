@@ -70,17 +70,18 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pd_index--;
     }
 
+
     printf("mid\n");
-    
-    printf("%p", ptbr->outer_ptes[pd_index]);
-    printf("mid\n");
+
+    if (ptbr->outer_ptes[pd_index] == NULL) ptbr->outer_ptes[pd_index] = malloc(sizeof(struct pte_directory));
+
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
 
     if (rw == 2 || rw == 3) {
-        ptbr->outer_ptes[pd_index]->ptes->writable = true;
+        ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = true;
     }
     else {
-        ptbr->outer_ptes[pd_index]->ptes->writable = false;
+        ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = false;
     }
 
     printf("mid\n");
