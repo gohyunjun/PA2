@@ -71,6 +71,9 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
 
     printf("mid\n");
+    
+    printf("%p", ptbr->outer_ptes[pd_index]);
+    printf("mid\n");
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
 
     if (rw == 2 || rw == 3) {
