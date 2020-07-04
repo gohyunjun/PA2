@@ -72,18 +72,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 
     printf("mid\n");
 
-    for (int i = 0; i < 16; i++) {
-        printf("%d\n",mapcounts[i]);
-    }
 
-    ptbr->outer_ptes[pd_index][pte_index].ptes->valid = true;
-
-    if (rw == 2 || rw == 3) {
-        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = true;
-    }
-    else {
-        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = false;
-    }
 
     for (int i = 0;; i++) {
         if (mapcounts[i] == 0) {
