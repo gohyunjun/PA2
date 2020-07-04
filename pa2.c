@@ -41,7 +41,7 @@ extern struct pagetable *ptbr;
  * The number of mappings for each page frame. Can be used to determine how
  * many processes are using the page frames.
  */
-extern unsigned int mapcounts[];
+extern unsigned int mapcounts[] = {0, };
 
 
 /**
@@ -65,13 +65,22 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     int pd_index = vpn / NR_PTES_PER_PAGE;
     int pte_index = vpn % NR_PTES_PER_PAGE - 1;
 
-   
+    if (pte_index == -1) {
+        pte_index = NR_PTES_PER_PAGE - 1;
+        pd_index--;
+    }
+
+    current->pagetable.outer_ptes[pd_index][pte_index].ptes->valid = true;
+
+    if (rw == 2 || rw == 3) {
+        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
+    }
+    else {
+        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = false;
+    }
 
     for (int i = 0;; i++) {
-        if (mapcounts[i] != 0) {
-            continue;
-        }
-        else {
+        if (mapcounts[i] == 0) {
 
             current->pagetable.outer_ptes[pd_index][pte_index].ptes->pfn = i;
 
@@ -80,7 +89,6 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
             return i;
             break;
         }
-
     }
 
 	return -1;
