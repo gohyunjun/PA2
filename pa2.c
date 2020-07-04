@@ -63,7 +63,7 @@ extern unsigned int mapcounts[];
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 {   
     int pd_index = vpn / NR_PTES_PER_PAGE;
-    int pte_index = vpn % NR_PTES_PER_PAGE - 1;
+    int pte_index = (vpn % NR_PTES_PER_PAGE) - 1;
 
     if (pte_index == -1) {
         pte_index = NR_PTES_PER_PAGE - 1;
@@ -71,19 +71,20 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
     printf("mid\n");
 
-    ptbr->outer_ptes[pd_index][pte_index].ptes->valid = true;
+
+    ptbr->outer_ptes[pd_index]->ptes->valid = true;
 
     if (rw == 2 || rw == 3) {
-        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = true;
+        ptbr->outer_ptes[pd_index]->ptes->writable = true;
     }
     else {
-        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = false;
+        ptbr->outer_ptes[pd_index]->ptes->writable = false;
     }
 
     for (int i = 0;; i++) {
         if (mapcounts[i] == 0) {
 
-            ptbr->outer_ptes[pd_index][pte_index].ptes->pfn = i;
+            ptbr->outer_ptes[pd_index]->ptes->pfn = i;
 
             mapcounts[i]++;
 
