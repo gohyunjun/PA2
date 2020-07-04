@@ -63,13 +63,7 @@ extern unsigned int mapcounts[];
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 {   
     int pd_index = vpn / NR_PTES_PER_PAGE;
-    int pte_index = (vpn % NR_PTES_PER_PAGE) - 1;
-
-    if (pte_index == -1) {
-        pte_index = NR_PTES_PER_PAGE - 1;
-        pd_index--;
-    }
-
+    int pte_index = vpn % NR_PTES_PER_PAGE;
 
     if (ptbr->outer_ptes[pd_index] == NULL) ptbr->outer_ptes[pd_index] = malloc(sizeof(struct pte_directory));
 
@@ -84,12 +78,9 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     
 
     for (int i = 0;; i++) {
-        if (mapcounts[i] == 0) {
-
+        if (!mapcounts[i]) {
 
             ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
-
-
             mapcounts[i]++;
 
             return i;
@@ -113,12 +104,8 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 void free_page(unsigned int vpn)
 {
     int pd_index = vpn / NR_PTES_PER_PAGE;
-    int pte_index = (vpn % NR_PTES_PER_PAGE) - 1;
+    int pte_index = (vpn % NR_PTES_PER_PAGE);
 
-    if (pte_index == -1) {
-        pte_index = NR_PTES_PER_PAGE - 1;
-        pd_index--;
-    }
 
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = false;
     ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = false;
