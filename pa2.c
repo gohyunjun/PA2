@@ -70,7 +70,14 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pd_index--;
     }
 
-    if (rw == "rw") {
+    bool writable = false;
+
+    if (atoi("rw") == rw) {
+        writable = true;
+    }
+
+
+    if (writable == true) {
         (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
     }
     else {
@@ -78,7 +85,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
 
     for (int i = 0;; i++) {
-        if (mapcounts[i] == NULL) {
+        if (mapcounts[i] == 0) {
 
             (*current).pagetable.outer_ptes[pd_index][pte_index].ptes->pfn = i;
 
