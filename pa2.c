@@ -80,6 +80,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     for (int i = 0;; i++) {
         if (!mapcounts[i]) {
 
+            mapcounts[i]++;
             ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
 
             return i;
