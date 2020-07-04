@@ -77,14 +77,13 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
     
 
-    for (int i = 0;; i++) {
+    for (int i = pd_index * NR_PTES_PER_PAGE;; i++) {
         if (!mapcounts[i]) {
 
             ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
             mapcounts[i]++;
 
             return i;
-            break;
         }
     }
 
