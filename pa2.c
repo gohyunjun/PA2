@@ -62,7 +62,10 @@ extern unsigned int mapcounts[];
  */
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 {   
-    
+    int pd_index = vpn / NR_PTES_PER_PAGE;
+    int pte_index = vpn % NR_PTES_PER_PAGE - 1;
+
+   
 
     for (int i = 0;; i++) {
         if (mapcounts[i] == 0) {
