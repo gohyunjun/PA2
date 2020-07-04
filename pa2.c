@@ -71,7 +71,6 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     }
     printf("%d", pd_index);
     printf("%d", pte_index);
-    printf("%d", &(ptbr->outer_ptes[pd_index][pte_index]));
 
     printf("mid\n");
 
