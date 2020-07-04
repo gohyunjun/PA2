@@ -170,14 +170,19 @@ void switch_process(unsigned int pid)
 	        INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
 	        list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
             
+            printf("mid\n");
+
             p->pid = pid;
 
+            printf("mid\n");
             current = p;
             ptbr = &(current->pagetable);
+            printf("mid\n");
 
             for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr ÃÊ±âÈ­
                 for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
                     ptbr->outer_ptes[i]->ptes[j].writable = false;
+                    printf("mid\n");
 
                 }
             }
