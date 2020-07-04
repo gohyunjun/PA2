@@ -69,17 +69,28 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
         pte_index = NR_PTES_PER_PAGE - 1;
         pd_index--;
     }
+    printf("mid\n");
 
-    current->pagetable.outer_ptes[pd_index][pte_index].ptes->valid = true;
+    ptbr->outer_ptes[pd_index][pte_index].ptes->valid = true;
 
     if (rw == 2 || rw == 3) {
-        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = true;
+        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = true;
     }
     else {
-        current->pagetable.outer_ptes[pd_index][pte_index].ptes->writable = false;
+        ptbr->outer_ptes[pd_index][pte_index].ptes->writable = false;
     }
 
-   
+    for (int i = 0;; i++) {
+        if (mapcounts[i] == 0) {
+
+            ptbr->outer_ptes[pd_index][pte_index].ptes->pfn = i;
+
+            mapcounts[i]++;
+
+            return i;
+            break;
+        }
+    }
 
 	return -1;
 }
