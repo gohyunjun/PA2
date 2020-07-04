@@ -183,6 +183,8 @@ static unsigned int __make_rwflag(const char *rw)
 
 static bool __alloc_page(unsigned int vpn, unsigned int rw)
 {
+	
+	printf("%d", rw);
 	unsigned int pfn;
 
 	assert(rw);
