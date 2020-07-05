@@ -170,11 +170,9 @@ void switch_process(unsigned int pid)
 	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
 	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
 	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
-                  
-            
-                printf("mid\n");
+                 
 
-                for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr 초기화
+                for (int i = 0;i< 8; i++) { // wr 초기화
                     for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
                         printf("%p\n", p->pagetable.outer_ptes[i]);
 
