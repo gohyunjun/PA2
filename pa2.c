@@ -21,20 +21,20 @@
 #include "list_head.h"
 #include "vm.h"
 
-/**
- * Ready queue of the system
- */
+ /**
+  * Ready queue of the system
+  */
 extern struct list_head processes;
 
 /**
  * Currently running process
  */
-extern struct process *current;
+extern struct process* current;
 
 /**
  * Page Table Base Register that MMU will walk through for address translation
  */
-extern struct pagetable *ptbr;
+extern struct pagetable* ptbr;
 
 
 /**
@@ -61,7 +61,7 @@ extern unsigned int mapcounts[];
  *   Return -1 if all page frames are allocated.
  */
 unsigned int alloc_page(unsigned int vpn, unsigned int rw)
-{   
+{
     int pd_index = vpn / NR_PTES_PER_PAGE;
     int pte_index = vpn % NR_PTES_PER_PAGE;
 
@@ -75,7 +75,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     else {
         ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = false;
     }
-    
+
 
     for (int i = 0;; i++) {
         if (!mapcounts[i]) {
@@ -83,12 +83,12 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
             ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
             mapcounts[i]++;
 
-            
+
             return i;
         }
     }
 
-	return -1;
+    return -1;
 }
 
 
@@ -109,7 +109,7 @@ void free_page(unsigned int vpn)
 
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = false;
     ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = false;
-
+    ptbr->outer_ptes[pd_index]->ptes[pte_index].private = 0;
     mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn]--;
 
 }
@@ -122,6 +122,7 @@ void free_page(unsigned int vpn)
  *   Handle the page fault for accessing @vpn for @rw. This function is called
  *   by the framework when the __translate() for @vpn fails. This implies;
  *   0. page directory is invalid
+
  *   1. pte is invalid
  *   2. pte is not writable but @rw is for write
  *   This function should identify the situation, and do the copy-on-write if
@@ -132,13 +133,13 @@ void free_page(unsigned int vpn)
  *   @false otherwise
  */
 bool handle_page_fault(unsigned int vpn, unsigned int rw)
-{   
+{
     int pd_index = vpn / NR_PTES_PER_PAGE;
     int pte_index = vpn % NR_PTES_PER_PAGE;
 
-    if (!(ptbr->outer_ptes[pd_index]->ptes[pte_index].writable) && (rw == 2 || rw == 3)) {
+    if (!(ptbr->outer_ptes[pd_index]->ptes[pte_index].writable) && (rw == 2 || rw == 3) && ptbr->outer_ptes[pd_index]->ptes[pte_index].private == 1) {
         ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = true;
-        
+
         if (mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn] > 1) {
 
             mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn]--;
@@ -153,15 +154,12 @@ bool handle_page_fault(unsigned int vpn, unsigned int rw)
                 }
             }
         }
-        else {
-            return false;
-        }
 
         return true;
     }
 
 
-	return false;
+    return false;
 }
 
 
@@ -176,70 +174,70 @@ bool handle_page_fault(unsigned int vpn, unsigned int rw)
  *   If there is no process with @pid in the @processes list, fork a process
  *   from the @current. This implies the forked child process should have
  *   the identical page table entry 'values' to its parent's (i.e., @current)
- *   page table. 
+ *   page table.
  *   To implement the copy-on-write feature, you should manipulate the writable
  *   bit in PTE and mapcounts for shared pages. You can use pte->private to
  *   remember whether the PTE was originally writable or not.
  */
 void switch_process(unsigned int pid)
 {
-	/** YOU CAN CHANGE EVERYTING (INCLUDING THE EXAMPLE) IN THIS FUNCTION **/
+    /** YOU CAN CHANGE EVERYTING (INCLUDING THE EXAMPLE) IN THIS FUNCTION **/
 
-	struct process *p;
+    struct process* p;
 
     bool find_flag = false;
 
-	/* This example shows to iterate @processes to find a process with @pid */
-	list_for_each_entry(p, &processes, list) {
-		if (p->pid == pid) {
-			/* FOUND */
+    /* This example shows to iterate @processes to find a process with @pid */
+    list_for_each_entry(p, &processes, list) {
+        if (p->pid == pid) {
+            /* FOUND */
             find_flag = true;
 
-			break;
-		}
-	}
+            break;
+        }
+    }
 
     if (!find_flag) {
-	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
-	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
-	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
-                p->pid = pid;
+        p = malloc(sizeof(*p));		/* This example shows to create a process, */
+        INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
+        list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
+        p->pid = pid;
 
-                for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
-                    for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
+        for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
+            for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
 
-                        if (ptbr->outer_ptes[i] == NULL) break;
-                        if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
+                if (ptbr->outer_ptes[i] == NULL) break;
+                if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
-                        
-                        p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
-                        p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
-                        
-                        if(ptbr->outer_ptes[i]->ptes[j].valid) mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]++;
-                        
-                        p->pagetable.outer_ptes[i]->ptes[j].writable = false;
 
-                    }
-                }
-                current = p;
-                ptbr = &(current->pagetable);
+                p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
+                p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+
+                if (ptbr->outer_ptes[i]->ptes[j].valid) mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]++;
+
+                p->pagetable.outer_ptes[i]->ptes[j].writable = false;
+                
+            }
+        }
+        current = p;
+        ptbr = &(current->pagetable);
     }
     else {
         for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
             for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
 
-                if (!ptbr->outer_ptes[i]->ptes[j].valid) {
+                if (ptbr->outer_ptes[i] == NULL) break;
+                if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
-                    if (ptbr->outer_ptes[i] == NULL) break;
-                    if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
-                    p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
-
-
-                    p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
-                    p->pagetable.outer_ptes[i]->ptes[j].writable = false;
-
+                if (ptbr->outer_ptes[i]->ptes[j].writable) {
+                    p->pagetable.outer_ptes[i]->ptes[j].private = 1;
                 }
-                    
+
+                p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
+                p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+
+                p->pagetable.outer_ptes[i]->ptes[j].writable = false;
+
             }
         }
         current = p;
