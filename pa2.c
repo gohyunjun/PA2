@@ -209,7 +209,7 @@ void switch_process(unsigned int pid)
                 if (ptbr->outer_ptes[i] == NULL) break;
                 if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
-                if (ptbr->outer_ptes[i]->ptes[j].writable) {
+                if (ptbr->outer_ptes[i]->ptes[j].writable || ptbr->outer_ptes[i]->ptes[j].private == 1) {
                     p->pagetable.outer_ptes[i]->ptes[j].private = 1;
                 }
 
@@ -232,14 +232,17 @@ void switch_process(unsigned int pid)
                 if (ptbr->outer_ptes[i] == NULL) break;
                 if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
-                if (ptbr->outer_ptes[i]->ptes[j].writable) {
+                if (ptbr->outer_ptes[i]->ptes[j].writable || ptbr->outer_ptes[i]->ptes[j].private == 1) {
                     p->pagetable.outer_ptes[i]->ptes[j].private = 1;
                 }
 
-                p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
-                p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+                if (!p->pagetable.outer_ptes[i]->ptes[j].valid) {
 
-                p->pagetable.outer_ptes[i]->ptes[j].writable = false;
+                    p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
+                    p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+
+                }
+                    p->pagetable.outer_ptes[i]->ptes[j].writable = false;
 
             }
         }
