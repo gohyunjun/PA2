@@ -187,7 +187,9 @@ void switch_process(unsigned int pid)
                         
                         p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
                         p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
-                        mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]++;
+                        
+                        if(mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]) mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]++;
+                        
                         p->pagetable.outer_ptes[i]->ptes[j].writable = false;
 
                     }
