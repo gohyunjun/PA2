@@ -169,10 +169,6 @@ void switch_process(unsigned int pid)
 
 			break;
 		}
-        else {
-            
-            continue;
-        }
 	}
 
     if (!find_flag) {
