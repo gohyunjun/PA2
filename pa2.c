@@ -209,6 +209,9 @@ void switch_process(unsigned int pid)
                 if (ptbr->outer_ptes[i] == NULL) break;
                 if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
+                if (ptbr->outer_ptes[i]->ptes[j].writable) {
+                    p->pagetable.outer_ptes[i]->ptes[j].private = 1;
+                }
 
                 p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
                 p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
