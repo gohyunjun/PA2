@@ -163,13 +163,14 @@ void switch_process(unsigned int pid)
 	list_for_each_entry(p, &processes, list) {
 		if (p->pid == pid) {
 			/* FOUND */
-
+            printf("이미있음");
             current = p;
             ptbr = &(current->pagetable);
 
 			break;
 		}
         else {
+            printf("이미 있음");
             
 	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
 	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
@@ -178,19 +179,13 @@ void switch_process(unsigned int pid)
 
                 for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
                     for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
-                        printf("%p\n", p->pagetable.outer_ptes[i]);
 
                         if (ptbr->outer_ptes[i] == NULL) break;
                         if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
-                        printf("%d\n", p->pagetable.outer_ptes[i]->ptes[j].valid);
-
-
                         p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
                         p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
                         p->pagetable.outer_ptes[i]->ptes[j].writable = false;
-
-                        printf("mid\n");
 
                     }
                 }
