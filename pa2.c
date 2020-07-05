@@ -163,6 +163,10 @@ void switch_process(unsigned int pid)
 	list_for_each_entry(p, &processes, list) {
 		if (p->pid == pid) {
 			/* FOUND */
+
+            current = p;
+            ptbr = &(current->pagetable);
+
 			break;
 		}
         else {
