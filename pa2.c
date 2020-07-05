@@ -176,9 +176,13 @@ void switch_process(unsigned int pid)
 
                 for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr ÃÊ±âÈ­
                     for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
+                        printf("%p\n", p->pagetable.outer_ptes[i]);
 
                         if (p->pagetable.outer_ptes[i] == NULL) ptbr->outer_ptes[j] = malloc(sizeof(struct pte_directory));
                         
+                        printf("%d\n", p->pagetable.outer_ptes[i]->ptes[j].valid);
+
+
                         p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
                         p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
                         p->pagetable.outer_ptes[i]->ptes[j].writable = false;
