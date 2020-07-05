@@ -172,8 +172,8 @@ void switch_process(unsigned int pid)
 	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
                  
 
-                for (int i = 0;i< 8; i++) { // wr ÃÊ±âÈ­
-                    for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
+  
+                    for (int j = 0; j< NR_PTES_PER_PAGE; j++) {
                         printf("%p\n", p->pagetable.outer_ptes[i]);
 
                         if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
@@ -188,7 +188,7 @@ void switch_process(unsigned int pid)
                         printf("mid\n");
 
                     }
-                }
+                
                 current = p;
                 ptbr = &(current->pagetable);
 
