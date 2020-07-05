@@ -104,7 +104,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
 void free_page(unsigned int vpn)
 {
     int pd_index = vpn / NR_PTES_PER_PAGE;
-    int pte_index = (vpn % NR_PTES_PER_PAGE);
+    int pte_index = vpn % NR_PTES_PER_PAGE;
 
 
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = false;
@@ -132,7 +132,8 @@ void free_page(unsigned int vpn)
  *   @false otherwise
  */
 bool handle_page_fault(unsigned int vpn, unsigned int rw)
-{
+{   
+
 	return false;
 }
 
@@ -183,8 +184,10 @@ void switch_process(unsigned int pid)
                         if (ptbr->outer_ptes[i] == NULL) break;
                         if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
+                        
                         p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
                         p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+                        mapcounts[ptbr->outer_ptes[i]->ptes[j].pfn]++;
                         p->pagetable.outer_ptes[i]->ptes[j].writable = false;
 
                     }
