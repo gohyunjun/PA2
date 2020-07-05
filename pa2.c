@@ -166,29 +166,19 @@ void switch_process(unsigned int pid)
 			break;
 		}
         else {
-	        p = malloc(sizeof(*p));		/* This example shows to create a process, */
-	        INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
-	        list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
             
-            
-            int status;
-            fflush(stdin);
+                  
+            if (pid = fork()) {
+	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
+	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
+	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
 
-            if ((pid = fork()) > 0) {
-                wait(&status);
-            }
-            else if (pid == 0) {
-
-                if (execvp() < 0) {
-                    fprintf(stderr, "No such file or directory\n");   
-                    return 0;
-                }
-
+                exec();
                 p->pid = pid;
                 printf("mid\n");
                 current = p;
                 ptbr = &(current->pagetable);
-               printf("mid\n");
+                printf("mid\n");
 
                 for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr ÃÊ±âÈ­
                     for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
@@ -200,8 +190,9 @@ void switch_process(unsigned int pid)
                 }
             }
             else {
+                wait();
 
-                return -1;
+
             }
 
 
