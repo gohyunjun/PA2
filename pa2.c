@@ -137,7 +137,7 @@ bool handle_page_fault(unsigned int vpn, unsigned int rw)
     int pte_index = vpn % NR_PTES_PER_PAGE;
 
     if (!(ptbr->outer_ptes[pd_index]->ptes[pte_index].writable) && (rw == 2 || rw == 3)) {
-        ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
+        ptbr->outer_ptes[pd_index]->ptes[pte_index].writable = true;
         
         if (mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn] > 1) {
 
