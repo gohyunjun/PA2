@@ -167,36 +167,28 @@ void switch_process(unsigned int pid)
 		}
         else {
             
-                  
-            if (pid = fork()) {
 	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
 	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
 	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
-
-                exec();
-                p->pid = pid;
-                printf("mid\n");
-                current = p;
-                ptbr = &(current->pagetable);
+                  
+            
                 printf("mid\n");
 
                 for (int i = 0;i< NR_PAGEFRAMES/NR_PTES_PER_PAGE; i++) { // wr ÃÊ±âÈ­
                     for (int j = 0;j< NR_PTES_PER_PAGE; j++) {
-                    
-                        ptbr->outer_ptes[i]->ptes[j].writable = false;
+
+                        if (p->pagetable.outer_ptes[i] == NULL) ptbr->outer_ptes[j] = malloc(sizeof(struct pte_directory));
+                        
+                        p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
+                        p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+                        p->pagetable.outer_ptes[i]->ptes[j].writable = false;
+
                         printf("mid\n");
 
                     }
                 }
-            }
-            else {
-                wait();
-
-
-            }
-
-
-
+                current = p;
+                ptbr = &(current->pagetable);
 
         }
 	}
