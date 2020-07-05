@@ -133,6 +133,29 @@ void free_page(unsigned int vpn)
  */
 bool handle_page_fault(unsigned int vpn, unsigned int rw)
 {   
+    int pd_index = vpn / NR_PTES_PER_PAGE;
+    int pte_index = vpn % NR_PTES_PER_PAGE;
+
+    if (!ptbr->outer_ptes[pd_index]->ptes[pte_index].writable && (rw == 2 || rw == 3)) {
+        ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
+        
+        if (mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn] > 1) {
+
+            mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn]--;
+
+
+            for (int i = 0;; i++) {
+                if (!mapcounts[i]) {
+
+                    ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn = i;
+                    mapcounts[i]++;
+                    break;
+                }
+            }
+        }
+        else return false;
+    }
+
 
 	return false;
 }
