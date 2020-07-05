@@ -153,7 +153,11 @@ bool handle_page_fault(unsigned int vpn, unsigned int rw)
                 }
             }
         }
-        else return false;
+
+        if (mapcounts[ptbr->outer_ptes[pd_index]->ptes[pte_index].pfn] < 0) {
+            return false;
+        }
+        else return true;
     }
 
 
