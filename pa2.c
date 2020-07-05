@@ -65,9 +65,7 @@ unsigned int alloc_page(unsigned int vpn, unsigned int rw)
     int pd_index = vpn / NR_PTES_PER_PAGE;
     int pte_index = vpn % NR_PTES_PER_PAGE;
 
-    for (int j = 0; j < NR_PAGEFRAMES / NR_PTES_PER_PAGE; j++) {
-        if (ptbr->outer_ptes[j] == NULL) ptbr->outer_ptes[j] = malloc(sizeof(struct pte_directory));
-    }
+    if (ptbr->outer_ptes[pd_index] == NULL) ptbr->outer_ptes[pd_index] = malloc(sizeof(struct pte_directory));
 
     ptbr->outer_ptes[pd_index]->ptes[pte_index].valid = true;
 
@@ -178,10 +176,11 @@ void switch_process(unsigned int pid)
 	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
                 p->pid = pid;
 
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
                     for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
                         printf("%p\n", p->pagetable.outer_ptes[i]);
 
+                        if (ptbr->outer_ptes[i] == NULL) break;
                         if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
 
                         printf("%d\n", p->pagetable.outer_ptes[i]->ptes[j].valid);
