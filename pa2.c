@@ -153,6 +153,9 @@ bool handle_page_fault(unsigned int vpn, unsigned int rw)
                 }
             }
         }
+        else {
+            return false;
+        }
 
         return true;
     }
@@ -222,6 +225,23 @@ void switch_process(unsigned int pid)
                 ptbr = &(current->pagetable);
     }
     else {
+        for (int i = 0; i < NR_PAGEFRAMES / NR_PTES_PER_PAGE; i++) {
+            for (int j = 0; j < NR_PTES_PER_PAGE; j++) {
+
+                if (!ptbr->outer_ptes[i]->ptes[j].valid) {
+
+                    if (ptbr->outer_ptes[i] == NULL) break;
+                    if (p->pagetable.outer_ptes[i] == NULL) p->pagetable.outer_ptes[i] = malloc(sizeof(struct pte_directory));
+                    p->pagetable.outer_ptes[i]->ptes[j].valid = ptbr->outer_ptes[i]->ptes[j].valid;
+
+
+                    p->pagetable.outer_ptes[i]->ptes[j].pfn = ptbr->outer_ptes[i]->ptes[j].pfn;
+                    p->pagetable.outer_ptes[i]->ptes[j].writable = false;
+
+                }
+                    
+            }
+        }
         current = p;
         ptbr = &(current->pagetable);
 
