@@ -159,19 +159,23 @@ void switch_process(unsigned int pid)
 
 	struct process *p;
 
+    bool find_flag = false;
+
 	/* This example shows to iterate @processes to find a process with @pid */
 	list_for_each_entry(p, &processes, list) {
 		if (p->pid == pid) {
 			/* FOUND */
-            printf("이미있음");
-            current = p;
-            ptbr = &(current->pagetable);
+            find_flag = true;
 
 			break;
 		}
         else {
-            printf("이미 있음");
             
+            continue;
+        }
+	}
+
+    if (!find_flag) {
 	            p = malloc(sizeof(*p));		/* This example shows to create a process, */
 	            INIT_LIST_HEAD(&p->list);	/* initialize list_head, */
 	            list_add_tail(&p->list, &processes);    /* and add it to the @processes list */
@@ -191,9 +195,13 @@ void switch_process(unsigned int pid)
                 }
                 current = p;
                 ptbr = &(current->pagetable);
+    }
+    else {
+        current = p;
+        ptbr = &(current->pagetable);
 
-        }
-	}
+        find_flag = false;
+    }
 
 }
 
